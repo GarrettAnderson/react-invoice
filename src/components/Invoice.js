@@ -11,24 +11,38 @@ class Invoice extends Component {
   state = {
     lineItems: [
       {
-        name: '',
-      description: '',
+      name: '',
+      details: '',
       quantity: 0,
       price: 0.00
     }
     ]
   }
 
+  handleLineItemChange = (elementIndex) => (event) {
+    let lineItems = this.state.lineItems.map((item, i) => {
+      if (elementIndex !== i) return item
+      return {...item, [event.target.name]: event.target.value}
+    })
+    this.setState({lineItems})
+  }
+
   render() {
     return (
-      <div>
         {this.state.lineItems.map((item, i) => (
           <div className={`${styles.row} ${styles.editable}`}
           key={i}>
-            <div></div>
+            <div>{i+1}</div>
+            <div><input name="name" type="text" value={item.name} onChange={this.handleLineItemChange(i)}/></div>
+            <div><input name="details" type="text" value={item.details} onChange={this.handleLineItemChange(i)}/></div>
+            <div><input name="quantity" type="number" step="1" value={item.quantity} onChange={this.handleLineItemChange(i)} onFocus={this.handleFocusSelect}/></div>
+            <div className={styles.currency}><input name="price" type="number" step="0.01" min="0.00" max="9999999.99" value={item.price} onChange={this.handleLineItemChange(i)} onFocus={this.handleFocusSelect} /></div>
+            <div className={styles.currency}>{this.formatCurrency(item.quantity * item.price)}</div>
+          <div>
+          <button type="button" className={styles.deleteItem} onClick={this.handleRemovalLineItem(i)}><DeleteIcon size="1.25em"/></button>
           </div>
+        </div>
         ))}
-      </div>
     );
   }
 }
