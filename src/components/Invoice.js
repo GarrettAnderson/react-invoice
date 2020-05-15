@@ -19,7 +19,7 @@ class Invoice extends Component {
     ]
   }
 
-  handleLineItemChange = (elementIndex) => (event) {
+  handleLineItemChange = (elementIndex) => (event) => {
     let lineItems = this.state.lineItems.map((item, i) => {
       if (elementIndex !== i) return item
       return {...item, [event.target.name]: event.target.value}
@@ -27,9 +27,53 @@ class Invoice extends Component {
     this.setState({lineItems})
   }
 
+  handleFocusSelect = (event) => {
+    event.target.select()
+  }
+
+  handleAddLineItem = (event) => {
+
+    this.setState({
+      lineItems: this.state.lineItems.concat(
+        [{ name: '', description: '', quantity: 0, price: 0.00}]
+      )
+    })
+  }
+
+  handleRemovalLineItem = (elementIndex) => (event) => {
+    this.setState({
+      lineItems: this.state.lineItems.filter((item, i) => {
+        return elementIndex !== i
+      })
+    })
+  }
+
+  formatCurrency = (amount) => {
+    return (new Intl.NumberFormat(this.locale, {
+      style: 'currency',
+      currency: this.currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount))
+  }
+
+  calcLineItemsTotal = (c) => {
+    return this.state.lineItems.reduce((prev, cur) => (prev + (cur.quantity * cur.price)), 0)
+  }
+
+  // calcTaxTotal = () => {
+  //   return this.calcLineItemsTotal() * (this.state.taxRate / 100)
+  // }
+
+  // calcGrandTotal = () => {
+  //   return this.calcLineItemsTotal() + this.calcTaxTotal
+  // }
+
   render() {
     return (
-        {this.state.lineItems.map((item, i) => (
+      <div>
+        <h2>Invoice</h2>  
+      {this.state.lineItems.map((item, i) => (
           <div className={`${styles.row} ${styles.editable}`}
           key={i}>
             <div>{i+1}</div>
@@ -43,6 +87,7 @@ class Invoice extends Component {
           </div>
         </div>
         ))}
+        </div>
     );
   }
 }
